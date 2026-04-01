@@ -723,6 +723,7 @@ let fbIdx=0;
 
 // ══ LOADING ══════════════════════════════════════════════
 function runLoad(){
+  initEmailJS(); // start loading EmailJS SDK early
   const bar=document.getElementById('ld-bar');
   const txt=document.getElementById('ld-txt');
   function step(){
@@ -848,14 +849,14 @@ function doSignup(){
 // ══ EMAILJS NOTIFICATIONS (optional - configure your own) ══
 // EmailJS configured — public key set by Madan S P
 // Still need: Service ID + 2 Template IDs from emailjs.com dashboard
-var EJ_SERVICE='YOUR_SERVICE_ID';       // ← replace with your Service ID
-var EJ_WELCOME_TPL='YOUR_WELCOME_TPL'; // ← replace with welcome template ID
-var EJ_LOGIN_TPL='YOUR_LOGIN_TPL';     // ← replace with login template ID
+var EJ_SERVICE='service_478fsxg';    // ✅ Service ID configured
+var EJ_WELCOME_TPL='template_dr5nqps'; // ✅ Welcome template configured
+var EJ_LOGIN_TPL='template_dr5nqps';   // ✅ Login template configured (same for now)
 var EJ_KEY='HNxPlvqq9OtmL_bqr';        // ✅ Public key configured
 var ejReady=false;
 
 function initEmailJS(){
-  if(EJ_SERVICE!=='YOUR_SERVICE_ID'&&EJ_WELCOME_TPL!=='YOUR_WELCOME_TPL'){
+  if(EJ_SERVICE!=='YOUR_SERVICE_ID'&&EJ_KEY!=='YOUR_PUBLIC_KEY'){
     try{
       // Load EmailJS SDK dynamically to avoid CDN blocking page load
       var s=document.createElement('script');
@@ -869,34 +870,64 @@ function initEmailJS(){
 }
 
 function sendWelcomeEmail(){
-  if(!ejReady||!CU)return;
-  try{
-    emailjs.send(EJ_SERVICE,EJ_WELCOME_TPL,{
-      to_name:CU.name,to_email:CU.email,
-      app_name:'Sonic Notes',login_url:window.location.href
-    });
-  }catch(e){}
+  if(!CU)return;
+  // Try sending - will work once EmailJS is ready
+  function trySend(retries){
+    if(ejReady){
+      try{
+        emailjs.send(EJ_SERVICE,EJ_WELCOME_TPL,{
+          to_name:    CU.name,
+          to_email:   CU.email,
+          from_name:  'Sonic Notes',
+          reply_to:   'noreply@sonicnotes.app',
+          message:    'Welcome to Sonic Notes! Your account has been created successfully. Start taking smarter notes with AI-powered voice recording.',
+          app_name:   'Sonic Notes',
+          login_url:  window.location.href,
+        });
+        console.log('Welcome email sent to '+CU.email);
+      }catch(e){console.warn('Welcome email error:',e);}
+    } else if(retries>0){
+      setTimeout(function(){trySend(retries-1);},1000);
+    }
+  }
+  trySend(5); // retry up to 5 times waiting for SDK
 }
 
 function sendLoginEmail(){
-  if(!ejReady||!CU)return;
+  if(!CU)return;
   var today=new Date().toDateString();
   var k='login_email_'+CU.uid+'_'+today;
-  if(Store.get(k,false))return; // once per day
+  if(Store.get(k,false))return; // once per day only
   Store.set(k,true);
   var streak=Store.get('streak_'+CU.uid,{current:0});
-  try{
-    emailjs.send(EJ_SERVICE,EJ_LOGIN_TPL,{
-      to_name:CU.name,to_email:CU.email,
-      login_date:new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),
-      login_time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}),
-      streak:streak.current||0,app_name:'Sonic Notes'
-    });
-  }catch(e){}
+  var dateStr=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  var timeStr=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  function trySend(retries){
+    if(ejReady){
+      try{
+        emailjs.send(EJ_SERVICE,EJ_LOGIN_TPL,{
+          to_name:    CU.name,
+          to_email:   CU.email,
+          from_name:  'Sonic Notes',
+          reply_to:   'noreply@sonicnotes.app',
+          message:    'You logged in on '+dateStr+' at '+timeStr+'. Your current study streak is '+( streak.current||0)+' days. Keep it up!',
+          login_date: dateStr,
+          login_time: timeStr,
+          streak:     streak.current||0,
+          app_name:   'Sonic Notes',
+        });
+        console.log('Login notification sent to '+CU.email);
+      }catch(e){console.warn('Login email error:',e);}
+    } else if(retries>0){
+      setTimeout(function(){trySend(retries-1);},1000);
+    }
+  }
+  trySend(5);
 }
 
 // ══ LAUNCH APP ════════════════════════════════════════════
 function launchApp(){
+  initEmailJS(); // ensure EmailJS is initialized
   document.getElementById('pg-app').classList.add('on');
   updateNavUser();
   loadSubjectCounts();
