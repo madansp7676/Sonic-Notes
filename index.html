@@ -418,6 +418,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .toast.success{border-color:rgba(69,232,192,.3);color:var(--a3)}
 .toast.error{border-color:rgba(255,90,170,.3);color:var(--a2)}
 .toast.info{border-color:rgba(110,90,255,.3);color:var(--ac)}
+
+/* Password toggle eye button */
+.pw-wrap{position:relative;display:flex;align-items:center}
+.pw-wrap .fi{width:100%;padding-right:40px}
+.pw-eye{position:absolute;right:12px;background:none;border:none;color:var(--mt);cursor:pointer;font-size:15px;padding:4px;transition:color .15s;line-height:1;user-select:none}
+.pw-eye:hover{color:var(--tx)}
 </style>
 </head>
 <body>
@@ -445,7 +451,18 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <div class="card-sub">Sign in to your workspace</div>
       <div class="ferr" id="login-err"></div>
       <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="l-em" placeholder="you@example.com"></div>
-      <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="l-pw" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fg">
+        <label class="fl">Password</label>
+        <div class="pw-wrap">
+          <input class="fi" type="password" id="l-pw" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()">
+          <button class="pw-eye" onclick="togglePw('l-pw',this)" type="button" title="Show/hide password">👁</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+        <input type="checkbox" id="rem-me" style="accent-color:var(--ac);cursor:pointer" onchange="toggleRemember()">
+        <label for="rem-me" style="font-size:12px;color:var(--mt);cursor:pointer">Remember me</label>
+        <a style="margin-left:auto;font-size:11px;color:var(--ac);cursor:pointer" onclick="forgotPw()">Forgot password?</a>
+      </div>
       <button class="auth-btn" onclick="doLogin()">Sign In →</button>
       <div class="auth-div">or</div>
       <div class="sw">No account? <a onclick="showFrm('signup')">Create one free</a></div>
@@ -457,7 +474,13 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <div class="ferr" id="signup-err"></div>
       <div class="fg"><label class="fl">Full Name</label><input class="fi" id="s-nm" placeholder="Your full name"></div>
       <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="s-em" placeholder="you@example.com"></div>
-      <div class="fg"><label class="fl">Password (8+ chars)</label><input class="fi" type="password" id="s-pw" placeholder="Create a password" onkeydown="if(event.key==='Enter')doSignup()"></div>
+      <div class="fg">
+        <label class="fl">Password (8+ chars)</label>
+        <div class="pw-wrap">
+          <input class="fi" type="password" id="s-pw" placeholder="Create a password" onkeydown="if(event.key==='Enter')doSignup()">
+          <button class="pw-eye" onclick="togglePw('s-pw',this)" type="button" title="Show/hide password">👁</button>
+        </div>
+      </div>
       <button class="auth-btn" onclick="doSignup()">Create Account →</button>
       <div class="auth-div">or</div>
       <div class="sw">Have an account? <a onclick="showFrm('login')">Sign in</a></div>
@@ -684,7 +707,11 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
               <div class="pf-g"><label class="pf-l">City</label><input class="pf-i" id="pf-city" placeholder="Your city"></div>
             </div>
             <div class="pf-g"><label class="pf-l">Bio</label><input class="pf-i" id="pf-bio" placeholder="Something about you…"></div>
-            <button class="pf-save" onclick="saveProfile()">Save Profile →</button>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px">
+              <button class="pf-save" onclick="saveProfile()">Save Profile →</button>
+              <button onclick="doLogout()" style="background:rgba(255,90,170,.1);border:1px solid rgba(255,90,170,.28);border-radius:8px;padding:9px 18px;color:var(--a2);font-family:var(--fb);font-size:12px;font-weight:500;cursor:pointer;transition:all .18s" onmouseover="this.style.background='rgba(255,90,170,.2)'" onmouseout="this.style.background='rgba(255,90,170,.1)'">🚪 Logout</button>
+            </div>
+            <div id="storage-info" style="margin-top:10px;font-size:10px;color:var(--m2)"></div>
           </div>
         </div>
       </div>
@@ -693,7 +720,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 
   <footer class="footer">
     <div class="footer-copy"><span class="sec-badge">🔒 Secured</span>© 2025 Sonic Notes. All rights reserved.</div>
-    <div class="founder-tag">⚡ Founded by <strong>Madan S P</strong>
+    <div class="founder-tag" onclick="adminTap()" title="">⚡ Founded by <strong>Madan S P</strong>
       <a href="https://www.linkedin.com/in/madan-s-p-40b074202/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:3px;background:rgba(0,119,181,.15);border:1px solid rgba(0,119,181,.3);border-radius:12px;padding:1px 8px;color:#5aaeff;font-size:9px;text-decoration:none;margin-left:4px">in LinkedIn ↗</a>
     </div>
     <div class="footer-links"><a>Privacy</a><a>Terms</a><a>Support</a></div>
@@ -707,7 +734,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
   <button class="ea-btn" onclick="openErr()">View</button>
   <button class="ea-x" onclick="closeErrAlert()">✕</button>
 </div>
-<div id="err-fab" onclick="toggleErr()">🐛<div id="err-badge"></div></div>
+<div id="err-fab" onclick="toggleErr()" style="display:none">🐛<div id="err-badge"></div></div>
 <div id="err-panel">
   <div class="ep-hdr"><div class="ep-live"></div><div class="ep-ttl">Error Tracker</div><div class="ep-stats"><span class="ep-st e" id="ep-e">0</span><span class="ep-st w" id="ep-w">0</span><span class="ep-st i" id="ep-i">0</span></div><button class="ep-x" onclick="closeErr()">✕</button></div>
   <div class="ep-tabs"><button class="ep-tab on" onclick="epTab('logs')">📋 Logs</button><button class="ep-tab" onclick="epTab('console')">⌨ Console</button><button class="ep-tab" onclick="epTab('metrics')">📊 Metrics</button><button class="ep-tab" onclick="epTab('health')">💚 Health</button></div>
@@ -721,9 +748,43 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 <script>
 // ═══════ STORAGE (localStorage-backed for reliability) ═══════════
 const Store = {
-  get(k, def) { try { const v = localStorage.getItem('sn_' + k); return v ? JSON.parse(v) : def; } catch(e) { return def; } },
-  set(k, v) { try { localStorage.setItem('sn_' + k, JSON.stringify(v)); } catch(e) {} },
-  del(k) { try { localStorage.removeItem('sn_' + k); } catch(e) {} }
+  get(k, def) {
+    try { const v = localStorage.getItem('sn_' + k); return v ? JSON.parse(v) : def; }
+    catch(e) { return def; }
+  },
+  set(k, v) {
+    try {
+      localStorage.setItem('sn_' + k, JSON.stringify(v));
+      return true;
+    } catch(e) {
+      // QuotaExceededError — storage full
+      if (e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014)) {
+        console.warn('Storage quota exceeded for key:', k);
+        // Try to free space by removing old note caches
+        try {
+          const keys = Object.keys(localStorage).filter(x => x.startsWith('sn_notes_'));
+          if (keys.length > 0) {
+            // Remove the oldest/largest note key
+            keys.sort((a,b) => (localStorage.getItem(b)||'').length - (localStorage.getItem(a)||'').length);
+            localStorage.removeItem(keys[0]);
+            // Retry
+            localStorage.setItem('sn_' + k, JSON.stringify(v));
+            return true;
+          }
+        } catch(e2) {}
+        // Show toast if available
+        if (typeof toast === 'function') toast('Storage full — some data may not save. Try deleting old notes.', 'error');
+      }
+      return false;
+    }
+  },
+  del(k) { try { localStorage.removeItem('sn_' + k); } catch(e) {} },
+  // Check how much storage is used
+  usage() {
+    let total = 0;
+    try { Object.keys(localStorage).forEach(k => { total += (localStorage.getItem(k)||'').length; }); } catch(e) {}
+    return Math.round(total / 1024) + ' KB used';
+  }
 };
 
 // ═══════ STATE ═══════════════════════════════════════════════════
@@ -765,6 +826,59 @@ const QUOTES = [
   {q:"Genius is 1% inspiration and 99% perspiration.",a:"Thomas Edison"},
 ];
 
+// ═══════ UTILITIES ══════════════════════════════════════════════
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+    btn.title = 'Hide password';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+    btn.title = 'Show password';
+  }
+}
+
+function doLogout() {
+  if (!confirm('Are you sure you want to logout?')) return;
+  Store.del('session');
+  CU = null;
+  // Reset app state
+  document.getElementById('pg-app').classList.remove('on');
+  document.getElementById('pg-auth').classList.add('on');
+  // Clear chat history
+  chatHist.length = 0;
+  const msgs = document.getElementById('chat-msgs');
+  if (msgs) msgs.innerHTML = '<div class="msg ai"><div class="msg-av">🧠</div><div class="msg-b">Hi! I'm your Sonic AI Tutor. Ask me anything about Java, C++, Python, Data Structures, DBMS, OS, Networks!</div></div>';
+  showFrm('login');
+  toast('Logged out successfully', 'info');
+}
+
+// Admin access — triple-tap on founder tag in footer
+let adminTapCount = 0, adminTapTimer = null;
+function adminTap() {
+  adminTapCount++;
+  clearTimeout(adminTapTimer);
+  adminTapTimer = setTimeout(() => { adminTapCount = 0; }, 1000);
+  if (adminTapCount >= 3) {
+    adminTapCount = 0;
+    const current = Store.get('admin_mode', false);
+    if (!current) {
+      Store.set('admin_mode', true);
+      const fab = document.getElementById('err-fab');
+      if (fab) fab.style.display = 'flex';
+      toast('🔓 Admin mode enabled — Error Tracker active', 'success');
+    } else {
+      Store.del('admin_mode');
+      const fab = document.getElementById('err-fab');
+      if (fab) fab.style.display = 'none';
+      toast('🔒 Admin mode disabled', 'info');
+    }
+  }
+}
+
 // ═══════ LOADING ═════════════════════════════════════════════════
 const ldMsgs = ['Starting up…','Loading workspace…','Almost ready!','Done!'];
 let ldPct = 0;
@@ -784,14 +898,32 @@ function runLoad() {
 function boot() {
   const ld = document.getElementById('pg-load');
   if (ld) { ld.style.opacity = '0'; setTimeout(() => { ld.style.display = 'none'; }, 600); }
-  const sess = Store.get('session', null);
-  if (sess && sess.expires > Date.now()) {
-    const users = Store.get('users', {});
-    const user = users[sess.uid];
-    if (user) { CU = user; launchApp(); return; }
+  try {
+    const sess = Store.get('session', null);
+    if (sess && sess.expires > Date.now()) {
+      const users = Store.get('users', {});
+      const user = users[sess.uid];
+      if (user) {
+        CU = user; // Restore full user object including avatar, profile fields
+        launchApp();
+        return;
+      }
+    }
+  } catch(e) {
+    console.warn('Session restore error:', e);
   }
   Store.del('session');
   document.getElementById('pg-auth').classList.add('on');
+  // Pre-fill remembered email
+  const rem = Store.get('remember_email', '');
+  if (rem) {
+    setTimeout(() => {
+      const emInp = document.getElementById('l-em');
+      const cbx = document.getElementById('rem-me');
+      if (emInp) emInp.value = rem;
+      if (cbx) cbx.checked = true;
+    }, 100);
+  }
 }
 runLoad();
 
@@ -799,6 +931,33 @@ runLoad();
 function showFrm(f) {
   document.getElementById('frm-login').style.display = f === 'login' ? 'block' : 'none';
   document.getElementById('frm-signup').style.display = f === 'signup' ? 'block' : 'none';
+  if (f === 'login') {
+    // Pre-fill remembered email
+    const rem = Store.get('remember_email', '');
+    if (rem) {
+      const emInp = document.getElementById('l-em');
+      const cbx = document.getElementById('rem-me');
+      if (emInp) emInp.value = rem;
+      if (cbx) cbx.checked = true;
+    }
+  }
+}
+
+function toggleRemember() {
+  const cb = document.getElementById('rem-me');
+  if (cb && !cb.checked) Store.del('remember_email');
+}
+
+function forgotPw() {
+  const em = (document.getElementById('l-em').value || '').trim();
+  if (!em) { toast('Enter your email first', 'error'); return; }
+  const users = Store.get('users', {});
+  const uid = btoa(em.toLowerCase()).replace(/=/g,'');
+  if (users[uid]) {
+    toast('Account found! Your password is stored locally — please check your saved passwords.', 'info');
+  } else {
+    toast('No account found with this email', 'error');
+  }
 }
 
 function hashPwd(pw) {
@@ -820,6 +979,10 @@ function doLogin() {
   if (user.pwh !== hashPwd(pw)) { err.textContent = 'Wrong password. Try again.'; err.classList.add('on'); return; }
   CU = user;
   Store.set('session', { uid, expires: Date.now() + 7 * 86400000 });
+  // Save email if "remember me" checked
+  const remCb = document.getElementById('rem-me');
+  if (remCb && remCb.checked) Store.set('remember_email', em);
+  else Store.del('remember_email');
   document.getElementById('pg-auth').classList.remove('on');
   launchApp();
 }
@@ -842,19 +1005,34 @@ function doSignup() {
   Store.set('streak_' + uid, { current: 0, longest: 0, last: null, history: [] });
   CU = user;
   Store.set('session', { uid, expires: Date.now() + 7 * 86400000 });
+  // Save email if "remember me" checked
+  const remCb = document.getElementById('rem-me');
+  if (remCb && remCb.checked) Store.set('remember_email', em);
+  else Store.del('remember_email');
   document.getElementById('pg-auth').classList.remove('on');
   launchApp();
 }
 
 // ═══════ LAUNCH APP ══════════════════════════════════════════════
+function isAdmin() {
+  // Admin: Madan S P — identified by email
+  if (!CU) return false;
+  const em = (CU.email || '').toLowerCase();
+  return em.includes('madan') || em === 'madansp7676@gmail.com' || Store.get('admin_mode', false);
+}
+
 function launchApp() {
   document.getElementById('pg-app').classList.add('on');
   updateNavUser();
   loadSubjectCounts();
+  loadCustomSubjects();  // Load any user-created subjects
   renderNotes('Java');
   loadStreakUI();
   loadProfileUI();
   updateApiBar();
+  // Show error tracker only for admin
+  const fab = document.getElementById('err-fab');
+  if (fab) fab.style.display = isAdmin() ? 'flex' : 'none';
   // Daily quote — once per day
   const today = new Date().toDateString();
   const qk = 'q_' + (CU ? CU.uid : '') + '_' + today;
@@ -909,9 +1087,51 @@ function setSubj(el, name) {
   renderNotes(name);
 }
 
+// Colors for new subjects, cycling through
+const SUBJ_COLORS = ['#e85a5a','#5ae8a0','#e8c45a','#5ab4e8','#c45ae8','#e85ab4','#5ae8e8','#a0e85a'];
+
 function addSubject() {
-  const n = prompt('New subject name:');
-  if (n && n.trim()) toast('Subject "' + n.trim() + '" added!', 'success');
+  const n = (prompt('Enter new subject name:') || '').trim();
+  if (!n) return;
+  if (!CU) { toast('Sign in to add subjects', 'error'); return; }
+  // Load existing custom subjects
+  const customs = Store.get('custom_subjects_' + CU.uid, []);
+  if (customs.some(s => s.name.toLowerCase() === n.toLowerCase())) {
+    toast('Subject already exists!', 'error'); return;
+  }
+  const color = SUBJ_COLORS[customs.length % SUBJ_COLORS.length];
+  customs.push({ name: n, color });
+  Store.set('custom_subjects_' + CU.uid, customs);
+  // Add to sidebar dynamically
+  addSubjectToSidebar(n, color);
+  // Switch to new subject
+  const newBtn = document.getElementById('sbtn-' + n.replace(/\s+/g,'_'));
+  if (newBtn) { setSubj(newBtn, n); }
+  toast('Subject "' + n + '" created!', 'success');
+}
+
+function addSubjectToSidebar(name, color) {
+  const sidebar = document.querySelector('.sidebar');
+  const addBtn = sidebar.querySelector('.sb-add');
+  const btn = document.createElement('button');
+  const safeId = name.replace(/\s+/g,'_');
+  btn.className = 'sbtn';
+  btn.id = 'sbtn-' + safeId;
+  btn.onclick = function() { setSubj(this, name); };
+  btn.innerHTML = '<div class="sb-dot" style="background:' + color + '"></div>' +
+    name + '<span class="sb-c" id="sc-' + name + '">0</span>';
+  sidebar.insertBefore(btn, addBtn);
+}
+
+function loadCustomSubjects() {
+  if (!CU) return;
+  const customs = Store.get('custom_subjects_' + CU.uid, []);
+  customs.forEach(s => addSubjectToSidebar(s.name, s.color));
+  // Also update counts for custom subjects
+  customs.forEach(s => {
+    const el = document.getElementById('sc-' + s.name);
+    if (el) el.textContent = getNotes(s.name).length;
+  });
 }
 
 // ═══════ NOTES — localStorage persistence ════════════════════════
@@ -1047,10 +1267,12 @@ function saveNote() {
   const content = (document.getElementById('ed-cont').value || '').trim();
   if (!title) { toast('Please enter a title', 'error'); return; }
   if (!CU) { toast('Sign in to save notes', 'error'); return; }
+  const now = new Date();
+  const timeLabel = now.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) + ' ' + now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
   saveNoteToStore(curSubj, {
     icon: '✏️', title, content, preview: content.slice(0, 200),
-    time: 'Just now', tags: ['typed'],
-    created: new Date().toISOString()
+    time: timeLabel, tags: ['typed'],
+    created: now.toISOString()
   });
   document.getElementById('ed-ttl').value = '';
   document.getElementById('ed-cont').value = '';
@@ -1144,10 +1366,12 @@ function saveVoiceNote() {
   if (!title) return;
   const content = recTx.trim() || 'Voice note content';
   if (!CU) { toast('Sign in to save notes', 'error'); return; }
+  const vnow = new Date();
+  const vtimeLabel = vnow.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) + ' ' + vnow.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
   saveNoteToStore(curSubj, {
     icon: '🎤', title, content, preview: content.slice(0, 200),
-    time: 'Just now', tags: ['voice'],
-    created: new Date().toISOString()
+    time: vtimeLabel, tags: ['voice'],
+    created: vnow.toISOString()
   });
   CU.voiceCount = (CU.voiceCount || 0) + 1;
   const users = Store.get('users', {});
@@ -1336,25 +1560,43 @@ function loadProfileUI() {
   let total = 0;
   ['Java','C++','Python','Data Structures','DBMS','Networks','OS'].forEach(s => { total += getNotes(s).length; });
   document.getElementById('phs-notes').textContent = total;
+  // Show storage usage
+  const si = document.getElementById('storage-info');
+  if (si) si.textContent = '💾 Browser storage: ' + Store.usage() + ' / ~5,000 KB limit';
 }
 
 function uploadAvatar(e) {
   const file = e.target.files[0];
   if (!file) return;
   if (!file.type.startsWith('image/')) { toast('Please select an image', 'error'); return; }
-  if (file.size > 3*1024*1024) { toast('Image must be under 3MB', 'error'); return; }
+  if (file.size > 5*1024*1024) { toast('Image must be under 5MB', 'error'); return; }
   const reader = new FileReader();
   reader.onload = ev => {
-    CU.avatar = ev.target.result;
-    const users = Store.get('users', {});
-    users[CU.uid] = CU;
-    Store.set('users', users);
-    document.getElementById('ph-img').src = CU.avatar;
-    document.getElementById('ph-img').style.display = 'block';
-    document.getElementById('ph-init').style.display = 'none';
-    const na = document.getElementById('nav-ava');
-    na.innerHTML = '<img src="' + CU.avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
-    toast('Photo updated!', 'success');
+    // Compress image to max 150x150 JPEG to stay under localStorage limits
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 150;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+      else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const compressed = canvas.toDataURL('image/jpeg', 0.7); // ~10KB max
+      CU.avatar = compressed;
+      const users = Store.get('users', {});
+      users[CU.uid] = CU;
+      const saved = Store.set('users', users);
+      if (saved === false) { toast('Could not save avatar — storage full', 'error'); return; }
+      document.getElementById('ph-img').src = CU.avatar;
+      document.getElementById('ph-img').style.display = 'block';
+      document.getElementById('ph-init').style.display = 'none';
+      const na = document.getElementById('nav-ava');
+      na.innerHTML = '<img src="' + CU.avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      toast('Photo updated!', 'success');
+    };
+    img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -1362,18 +1604,32 @@ function uploadAvatar(e) {
 function saveProfile() {
   const nm = (document.getElementById('pf-nm').value||'').trim();
   if (!nm || nm.length < 2) { toast('Name too short', 'error'); return; }
-  CU.name = nm; CU.phone = (document.getElementById('pf-ph').value||'').slice(0,20);
-  CU.institution = (document.getElementById('pf-inst').value||'').slice(0,200);
+  // Update all fields on CU object
+  CU.name = nm;
+  CU.phone = (document.getElementById('pf-ph').value||'').trim().slice(0,20);
+  CU.institution = (document.getElementById('pf-inst').value||'').trim().slice(0,200);
   CU.level = document.getElementById('pf-lvl').value;
-  CU.course = (document.getElementById('pf-course').value||'').slice(0,100);
-  CU.city = (document.getElementById('pf-city').value||'').slice(0,100);
-  CU.bio = (document.getElementById('pf-bio').value||'').slice(0,500);
+  CU.course = (document.getElementById('pf-course').value||'').trim().slice(0,100);
+  CU.city = (document.getElementById('pf-city').value||'').trim().slice(0,100);
+  CU.bio = (document.getElementById('pf-bio').value||'').trim().slice(0,500);
+  CU.updatedAt = new Date().toISOString();
+  // Save to localStorage
   const users = Store.get('users', {});
   users[CU.uid] = CU;
-  Store.set('users', users);
+  const saved = Store.set('users', users);
+  if (saved === false) {
+    toast('Save failed — storage may be full', 'error');
+    return;
+  }
+  // Verify it was actually saved
+  const verify = Store.get('users', {})[CU.uid];
+  if (!verify || verify.name !== nm) {
+    toast('Save may have failed — try refreshing', 'error');
+    return;
+  }
   updateNavUser();
   loadProfileUI();
-  toast('Profile saved!', 'success');
+  toast('Profile saved successfully! ✓', 'success');
   ET.success('Profile updated', nm);
 }
 
