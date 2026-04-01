@@ -851,7 +851,7 @@ function doLogout() {
   // Clear chat history
   chatHist.length = 0;
   const msgs = document.getElementById('chat-msgs');
-  if (msgs) msgs.innerHTML = '<div class="msg ai"><div class="msg-av">🧠</div><div class="msg-b">Hi! I'm your Sonic AI Tutor. Ask me anything about Java, C++, Python, Data Structures, DBMS, OS, Networks!</div></div>';
+  if (msgs) msgs.innerHTML = '<div class="msg ai"><div class="msg-av">🧠</div><div class="msg-b">Hi! I am your Sonic AI Tutor. Ask me anything about Java, C++, Python, Data Structures, DBMS, OS, Networks!</div></div>';
   showFrm('login');
   toast('Logged out successfully', 'info');
 }
