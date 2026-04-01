@@ -846,17 +846,25 @@ function doSignup(){
 }
 
 // ══ EMAILJS NOTIFICATIONS (optional - configure your own) ══
-// To enable: go to emailjs.com, create free account, set up service+templates
-// Replace the IDs below with your own, then it works automatically
-var EJ_SERVICE='YOUR_SERVICE_ID';
-var EJ_WELCOME_TPL='YOUR_WELCOME_TEMPLATE_ID';
-var EJ_LOGIN_TPL='YOUR_LOGIN_TEMPLATE_ID';
-var EJ_KEY='YOUR_PUBLIC_KEY';
+// EmailJS configured — public key set by Madan S P
+// Still need: Service ID + 2 Template IDs from emailjs.com dashboard
+var EJ_SERVICE='YOUR_SERVICE_ID';       // ← replace with your Service ID
+var EJ_WELCOME_TPL='YOUR_WELCOME_TPL'; // ← replace with welcome template ID
+var EJ_LOGIN_TPL='YOUR_LOGIN_TPL';     // ← replace with login template ID
+var EJ_KEY='HNxPlvqq9OtmL_bqr';        // ✅ Public key configured
 var ejReady=false;
 
 function initEmailJS(){
-  if(typeof emailjs!=='undefined'&&EJ_KEY!=='YOUR_PUBLIC_KEY'){
-    try{emailjs.init({publicKey:EJ_KEY});ejReady=true;}catch(e){}
+  if(EJ_SERVICE!=='YOUR_SERVICE_ID'&&EJ_WELCOME_TPL!=='YOUR_WELCOME_TPL'){
+    try{
+      // Load EmailJS SDK dynamically to avoid CDN blocking page load
+      var s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+      s.onload=function(){
+        try{emailjs.init({publicKey:EJ_KEY});ejReady=true;console.log('EmailJS ready');}catch(e){}
+      };
+      document.head.appendChild(s);
+    }catch(e){}
   }
 }
 
